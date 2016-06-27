@@ -57,3 +57,15 @@ def check_output(context, data):
         print('OUTPUT: %r' % output)
     assert status == 0
     assert data in output
+
+
+@then('File "{path}" contains "{data}"')
+def check_output_file(context, path, data):
+    output, _ = context.process.communicate()
+    status = context.process.wait()
+    if status != 0:
+        print('OUTPUT: %r' % output)
+    with open(path, 'rb') as stream:
+        output = stream.read().decode('utf-8').strip()
+    assert status == 0
+    assert data in output

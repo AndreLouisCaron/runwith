@@ -9,6 +9,7 @@ from __future__ import (
 import hypothesis
 import hypothesis.strategies
 import mock
+import os.path
 import pytest
 
 from runwith import main, __main__
@@ -97,3 +98,21 @@ def test_redirect_stdin(tempcwd, status, command):
         popen.side_effect = [process]
         assert main(['-i', 'foo.txt', '--'] + command) == status
         popen.assert_called_once_with(command, stdin=mock.ANY)
+
+
+@hypothesis.given(
+    status=hypothesis.strategies.integers(min_value=-128, max_value=127),
+    command=hypothesis.strategies.lists(
+        elements=hypothesis.strategies.text(min_size=1),
+        min_size=1,
+    ),
+)
+def test_redirect_stdout(tempcwd, status, command):
+    process = mock.MagicMock()
+    process.returncode = status
+    process.wait.return_value = process.returncode
+    with mock.patch('subprocess.Popen') as popen:
+        popen.side_effect = [process]
+        assert main(['-o', 'foo.txt', '--'] + command) == status
+        popen.assert_called_once_with(command, stdout=mock.ANY)
+    assert os.path.exists('foo.txt')

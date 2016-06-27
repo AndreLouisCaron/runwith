@@ -12,6 +12,7 @@ import sys
 
 cli = argparse.ArgumentParser('runwith')
 cli.add_argument('-i', '--stdin', type=argparse.FileType('r'))
+cli.add_argument('-o', '--stdout', type=argparse.FileType('w'))
 cli.add_argument('command', nargs='+')
 
 
@@ -27,7 +28,7 @@ def main(argv=None):
 
     # Translate CLI arguments to Popen options.
     options = {}
-    for k in ('stdin',):
+    for k in ('stdin', 'stdout'):
         v = getattr(argv, k, None)
         if v:
             options[k] = v
