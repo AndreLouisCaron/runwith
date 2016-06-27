@@ -24,5 +24,6 @@ available on PyPI_ makes it easy to use like this:
    commands =
      runwith -o foo.log -- foo
 
+.. _Tox: https://tox.readthedocs.io/
 .. _`Capturing output from commands`: http://comments.gmane.org/gmane.comp.python.testing.general/6709
 .. _PyPI: https://pypi.python.org/pypi
