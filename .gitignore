@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+
+*~
+*.pyc
+/*.egg-info/
+/.cache/
+/.coverage
+/.hypothesis/
+/.tox/
+/build/
+/coverage/
+/dist/
