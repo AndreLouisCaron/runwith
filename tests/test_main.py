@@ -134,3 +134,21 @@ def test_redirect_stderr(tempcwd, status, command):
         assert main(['-e', 'foo.txt', '--'] + command) == status
         popen.assert_called_once_with(command, stderr=mock.ANY)
     assert os.path.exists('foo.txt')
+
+
+@hypothesis.given(
+    status=hypothesis.strategies.integers(min_value=-128, max_value=127),
+    command=hypothesis.strategies.lists(
+        elements=hypothesis.strategies.text(min_size=1),
+        min_size=1,
+    ),
+    workdir=hypothesis.strategies.text(min_size=1),
+)
+def test_change_working_directory(tempcwd, status, command, workdir):
+    process = mock.MagicMock()
+    process.returncode = status
+    process.wait.return_value = process.returncode
+    with mock.patch('subprocess.Popen') as popen:
+        popen.side_effect = [process]
+        assert main(['-w', workdir, '--'] + command) == status
+        popen.assert_called_once_with(command, cwd=workdir)

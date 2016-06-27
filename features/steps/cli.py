@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import os
 import shlex
 import subprocess
 
@@ -15,6 +16,11 @@ from behave import (
 def write(context, path, data):
     with open(path, 'wb') as stream:
         stream.write(data.encode('utf-8'))
+
+
+@given('Folder "{path}" exists')
+def create(context, path):
+    os.mkdir(path)
 
 
 @when('I run `{command}`')
@@ -49,7 +55,7 @@ def check_usage(context):
 
 
 @then('The output contains "{data}"')
-def check_output(context, data):
+def check_output_contains(context, data):
     output, _ = context.process.communicate()
     output = output.decode('utf-8').strip()
     status = context.process.wait()
@@ -59,8 +65,19 @@ def check_output(context, data):
     assert data in output
 
 
+@then('The output ends with "{data}"')
+def check_output_ends_with(context, data):
+    output, _ = context.process.communicate()
+    output = output.decode('utf-8').strip()
+    status = context.process.wait()
+    if status != 0:
+        print('OUTPUT: %r' % output)
+    assert status == 0
+    assert output.endswith(data)
+
+
 @then('File "{path}" contains "{data}"')
-def check_output_file(context, path, data):
+def check_output_file_contains(context, path, data):
     output, _ = context.process.communicate()
     status = context.process.wait()
     if status != 0:
