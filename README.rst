@@ -14,9 +14,7 @@ The original use case is for use of Tox_ as a task runner.  Since Tox uses a
 limited subset of shell capabilities and developers are not interested in
 enhancing them (see `Capturing output from commands`_), I had to wrap some kind
 of wrapper script.  I rapidly started reusing in other projects and making it
-available on PyPI_ makes it easy to use like this:
-
-.. source-code:: ini
+available on PyPI_ makes it easy to use like this::
 
    [testenv]
    deps =
