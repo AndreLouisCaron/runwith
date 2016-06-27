@@ -12,3 +12,8 @@ Feature: I/O redirection
 
     When I run `runwith -o foo.txt -- python -c 'import sys;  sys.stdout.write("FOO")'`
     Then File "foo.txt" contains "FOO"
+
+  Scenario: redirect standard error
+
+    When I run `runwith -e foo.txt -- python -c 'import sys;  sys.stderr.write("FOO")'`
+    Then File "foo.txt" contains "FOO"
