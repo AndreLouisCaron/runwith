@@ -11,6 +11,7 @@ import sys
 
 
 cli = argparse.ArgumentParser('runwith')
+cli.add_argument('-i', '--stdin', type=argparse.FileType('r'))
 cli.add_argument('command', nargs='+')
 
 
@@ -24,8 +25,14 @@ def main(argv=None):
     # Parse command-line arguments.
     argv = cli.parse_args(argv)
 
-    # Start the child process.
+    # Translate CLI arguments to Popen options.
     options = {}
+    for k in ('stdin',):
+        v = getattr(argv, k, None)
+        if v:
+            options[k] = v
+
+    # Start the child process.
     try:
         process = subprocess.Popen(
             argv.command, **options

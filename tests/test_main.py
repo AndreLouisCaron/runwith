@@ -78,3 +78,22 @@ def test_forward_status(status, command):
         popen.side_effect = [process]
         assert main(['--'] + command) == status
         popen.assert_called_once_with(command)
+
+
+@hypothesis.given(
+    status=hypothesis.strategies.integers(min_value=-128, max_value=127),
+    command=hypothesis.strategies.lists(
+        elements=hypothesis.strategies.text(min_size=1),
+        min_size=1,
+    ),
+)
+def test_redirect_stdin(tempcwd, status, command):
+    process = mock.MagicMock()
+    process.returncode = status
+    process.wait.return_value = process.returncode
+    with open('foo.txt', 'wb') as stream:
+        stream.write(b'FOO')
+    with mock.patch('subprocess.Popen') as popen:
+        popen.side_effect = [process]
+        assert main(['-i', 'foo.txt', '--'] + command) == status
+        popen.assert_called_once_with(command, stdin=mock.ANY)

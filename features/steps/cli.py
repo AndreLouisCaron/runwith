@@ -5,9 +5,16 @@ import shlex
 import subprocess
 
 from behave import (
+    given,
     when,
     then,
 )
+
+
+@given('File "{path}" contains "{data}"')
+def write(context, path, data):
+    with open(path, 'wb') as stream:
+        stream.write(data.encode('utf-8'))
 
 
 @when('I run `{command}`')
@@ -39,3 +46,14 @@ def check_usage(context):
     assert status == 2
     print('OUTPUT: %r' % output)
     assert output.startswith('usage: runwith')
+
+
+@then('The output contains "{data}"')
+def check_output(context, data):
+    output, _ = context.process.communicate()
+    output = output.decode('utf-8').strip()
+    status = context.process.wait()
+    if status != 0:
+        print('OUTPUT: %r' % output)
+    assert status == 0
+    assert data in output
