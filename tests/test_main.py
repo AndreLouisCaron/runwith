@@ -13,6 +13,7 @@ import os.path
 import pytest
 
 from datetime import timedelta
+from hypothesis_regex import regex
 from runwith import (
     main,
     __main__,
@@ -204,7 +205,7 @@ def test_redirect_stderr(tempcwd, status, command):
         elements=hypothesis.strategies.text(min_size=1),
         min_size=1,
     ),
-    workdir=hypothesis.strategies.text(min_size=1).map(quote),
+    workdir=regex(r'\w+').map(quote),
 )
 def test_change_working_directory(tempcwd, status, command, workdir):
     process = mock.MagicMock()
