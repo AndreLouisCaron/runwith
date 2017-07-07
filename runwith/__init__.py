@@ -14,6 +14,13 @@ import threading
 
 from signal import SIGKILL
 
+try:
+    # py3
+    from contextlib import ExitStack, closing
+except ImportError:
+    # py2
+    from contextlib2 import ExitStack, closing
+
 
 def timespan(x):
     pattern = re.compile(
@@ -57,6 +64,13 @@ def main(argv=None):
 
     # Parse command-line arguments.
     argv = cli.parse_args(argv)
+
+    # Make sure we close the handles.
+    with ExitStack() as stack:
+        for k in ('stdin', 'stdout', 'stderr'):
+            stream = getattr(argv, k, None)
+            if stream:
+                stack.enter_context(closing(stream))
 
     # Translate CLI arguments to Popen options.
     options = {}
