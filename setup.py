@@ -28,4 +28,7 @@ setup(
             'runwith = runwith:main',
         ],
     },
+    install_requires=[
+        'contextlib2',
+    ],
 )
