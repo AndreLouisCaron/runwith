@@ -12,7 +12,10 @@ import subprocess
 import sys
 import threading
 
-from signal import SIGKILL
+try:
+    from signal import SIGKILL
+except ImportError:
+    from signal import CTRL_C_EVENT
 
 try:
     # py3
@@ -89,14 +92,23 @@ def main(argv=None):
         sys.exit(2)
 
     # Wait for the child process to complete.
+    #
+    # NOTE: there is no timeout on `process.wait()` so we use the timeout on a
+    #       thread as a workaround.
     thread = threading.Thread(target=process.wait)
     thread.start()
     if argv.time_limit is None:
         thread.join()
     else:
-        thread.join(argv.time_limit.total_seconds())
+        thread.join(min(.05, argv.time_limit.total_seconds()))
     if thread.is_alive() and argv.grace_time:
-        process.send_signal(SIGKILL)
+        if sys.platform == 'win32':
+            from ctypes import windll
+            GenerateConsoleCtrlEvent = windll.kernel32.GenerateConsoleCtrlEvent
+            if GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0) == 0:
+                raise WindowsError()
+        else:
+            process.send_signal(SIGKILL)
         thread.join(argv.grace_time.total_seconds())
     if thread.is_alive():
         process.terminate()

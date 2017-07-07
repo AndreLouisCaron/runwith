@@ -11,6 +11,7 @@ import hypothesis.strategies
 import mock
 import os.path
 import pytest
+import sys
 
 from datetime import timedelta
 from hypothesis_regex import regex
@@ -18,8 +19,11 @@ from runwith import (
     main,
     __main__,
     timespan,
-    SIGKILL,
 )
+
+
+if sys.platform != 'win32':
+    from signal import SIGKILL
 
 try:
     from shlex import quote
@@ -252,7 +256,13 @@ def test_respect_timebox(status, command, timebox):
         max_value=31 * DAY,
     ).map(seconds_to_timespan),
 )
-def test_exceed_timebox(status, command, timebox):
+@hypothesis.settings(
+    suppress_health_check=[
+        # Somehow, the return value for this test is not `None`..?
+        hypothesis.HealthCheck.return_value,
+    ],
+)
+def test_exceed_timebox(ignore_ctrlc, status, command, timebox):
     process = mock.MagicMock()
     process.returncode = status
     process.wait.return_value = process.returncode
@@ -266,7 +276,10 @@ def test_exceed_timebox(status, command, timebox):
             assert main(['-t', timebox, '-g', '2s', '--'] + command) == status
             P.assert_called_once_with(command)
             T.assert_called_once()
-            process.send_signal.assert_called_once_with(SIGKILL)
+            if sys.platform == 'win32':
+                ignore_ctrlc.assert_called_once_with()
+            else:
+                process.send_signal.assert_called_once_with(SIGKILL)
             process.terminate.assert_not_called()
 
 
@@ -310,7 +323,13 @@ def test_exceed_timebox_no_grace_time(status, command, timebox):
         max_value=31 * DAY,
     ).map(seconds_to_timespan),
 )
-def test_exceed_timebox_and_grace_time(status, command, timebox):
+@hypothesis.settings(
+    suppress_health_check=[
+        # Somehow, the return value for this test is not `None`..?
+        hypothesis.HealthCheck.return_value,
+    ],
+)
+def test_exceed_timebox_and_grace_time(ignore_ctrlc, status, command, timebox):
     process = mock.MagicMock()
     process.returncode = status
     process.wait.return_value = process.returncode
@@ -324,5 +343,8 @@ def test_exceed_timebox_and_grace_time(status, command, timebox):
             assert main(['-t', timebox, '-g', '2s', '--'] + command) == status
             P.assert_called_once_with(command)
             T.assert_called_once()
-            process.send_signal.assert_called_once_with(SIGKILL)
+            if sys.platform == 'win32':
+                ignore_ctrlc.assert_called_once_with()
+            else:
+                process.send_signal.assert_called_once_with(SIGKILL)
             process.terminate.assert_called_once()
