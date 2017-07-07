@@ -205,7 +205,7 @@ def test_redirect_stderr(tempcwd, status, command):
         elements=hypothesis.strategies.text(min_size=1),
         min_size=1,
     ),
-    workdir=regex(r'\w+').map(quote),
+    workdir=regex(r'\w{1:32}').map(quote),
 )
 def test_change_working_directory(tempcwd, status, command, workdir):
     process = mock.MagicMock()
