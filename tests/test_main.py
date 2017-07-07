@@ -224,7 +224,7 @@ def test_change_working_directory(tempcwd, status, command, workdir):
         min_size=1,
     ),
     timebox=hypothesis.strategies.floats(
-        min_value=0.001,  # 1ms
+        min_value=0.1,  # 100ms
         max_value=31 * DAY,
     ).map(seconds_to_timespan),
 )
@@ -248,7 +248,7 @@ def test_respect_timebox(status, command, timebox):
         min_size=1,
     ),
     timebox=hypothesis.strategies.floats(
-        min_value=0.001,  # 1ms
+        min_value=0.1,  # 100ms
         max_value=31 * DAY,
     ).map(seconds_to_timespan),
 )
