@@ -5,18 +5,42 @@
 #    pip-compile --output-file requirements-py27.txt requirements.in
 #
 behave==1.2.5
+    # via -r requirements.in
 coverage==4.4.1
+    # via -r requirements.in
 flake8==3.3.0
+    # via -r requirements.in
 hypothesis-regex==0.2
+    # via -r requirements.in
 hypothesis==3.11.6
-mccabe==0.6.1             # via flake8
+    # via
+    #   -r requirements.in
+    #   hypothesis-regex
+mccabe==0.6.1
+    # via flake8
 mock==2.0.0
-parse-type==0.3.4         # via behave
-parse==1.8.2              # via behave, parse-type
-pbr==3.1.1                # via mock
-py==1.4.34                # via pytest
-pycodestyle==2.0.0        # via flake8
-pyflakes==1.5.0           # via flake8
+    # via -r requirements.in
+parse-type==0.3.4
+    # via behave
+parse==1.8.2
+    # via
+    #   behave
+    #   parse-type
+pbr==3.1.1
+    # via mock
+py==1.10.0
+    # via pytest
+pycodestyle==2.0.0
+    # via flake8
+pyflakes==1.5.0
+    # via flake8
 pytest==3.1.2
-six==1.10.0               # via behave, hypothesis-regex, mock, parse-type
+    # via -r requirements.in
+six==1.10.0
+    # via
+    #   behave
+    #   hypothesis-regex
+    #   mock
+    #   parse-type
 testfixtures==5.1.1
+    # via -r requirements.in
